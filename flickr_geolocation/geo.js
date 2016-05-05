@@ -1,3 +1,5 @@
+// get 117 images and populate array
+
 GEO = {
     
     getGeo: function() {
@@ -19,11 +21,10 @@ FLICKR = {
     params: {
         method:  'flickr.photos.search',
         api_key: 'ebf0d0344b1f200ad29dc4f473b71308',
-        secret: "d54c90fe3d715c4f",
         format:  'json',
-        radius:   1,
+        radius:   25,
         has_geo:  1,
-        nojsoncallback: 1
+        nojsoncallback: 1,
     },
     
     setup: function(position) {

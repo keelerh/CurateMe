@@ -113,7 +113,7 @@
 		</div>
 
 		<script>
-
+		// url, source, caption, 
 			var table = [
 				"http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1,
 				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Helium", "4.002602", 18, 1,
@@ -235,7 +235,7 @@
 				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Ununoctium", "(294)", 18, 7
 			];
 
-			var camera, scene, renderer, effect;
+			var camera, scene, renderer, effect, photos;
 			var controls;
 
 			var objects = [];
@@ -251,7 +251,93 @@
 
 				scene = new THREE.Scene();
 
-				// table
+				GEO = {
+    
+				    getGeo: function() {
+				        if(navigator.geolocation) {
+				            GEO.message('CurateMe Flickr photos geolocating...');                    
+				            navigator.geolocation.getCurrentPosition(FLICKR.setup, this.message);
+				        } else {
+				            this.message('Geolocation service is unavailable');
+				        }
+				    }
+				};
+				
+				FLICKR = {
+				    url: 'https://api.flickr.com/services/rest/?',
+				    params: {
+				        method:  'flickr.photos.search',
+				        api_key: 'ebf0d0344b1f200ad29dc4f473b71308',
+				        format:  'json',
+				        radius:   25,
+				        has_geo:  1,
+				        nojsoncallback: 1,
+				    },
+				    
+				    setup: function(position) {
+				        GEO.message('Finding Flickr photos near ' + position.coords.latitude + ', ' + position.coords.longitude);
+				        FLICKR.search(position.coords.latitude, position.coords.longitude);
+				    },
+				    
+				    search: function(lat, lon) {
+				        FLICKR.params.lat = lat;
+				        FLICKR.params.lon = lon;
+				        console.log(lat);
+				
+				        $.ajax({
+				          url: FLICKR.url,
+				          data: FLICKR.params,
+				          dataType: 'json',
+				          
+				          success: function(data){
+				            GEO.message('Loading photo...');                        
+				            FLICKR.display(data);
+				          },
+				          
+				          error: function(request, textStatus, errorThrown) {
+				            GEO.message(textStatus);
+				          }
+				        });
+				
+				    },
+				    
+				    display: function(data) { 
+				        if(typeof(data.photos) == "undefined") {
+				            GEO.message('No photos found.');
+				            return false;
+				        } else if(data.photos.total <= 0) {
+				            GEO.message('No photos found.');
+				            return false;            
+				        }
+				         
+				        var i = Math.floor(Math.random()*data.photos.photo.length);
+				        photos = data.photos.photo;
+				        console.log(photos);
+				                            
+				        var src = "http://farm"+ 
+				                    photo.farm +".static.flickr.com/"+ 
+				                    photo.server +"/"+ 
+				                    photo.id +"_"+ 
+				                    photo.secret +"_z.jpg";
+				        
+				        var image = new Image();
+				        image.onload = function(){
+				            
+										$(image).appendTo($('#container'));
+				
+				            if(photo.title) {
+				                GEO.message(photo.title);                
+				            } else {
+				                GEO.message('Untitled');
+				            }
+				        };
+				        image.src = src;
+				        return photos;
+				    }
+				}
+				
+				GEO.getGeo;
+				console.log(FLICKR.search);
 
 				for ( var i = 0; i < table.length; i += 5 ) {
 
@@ -261,14 +347,36 @@
 
 					var number = document.createElement( 'div' );
 					number.className = 'number';
-					number.textContent = 'source';
+					number.textContent = 'source'; // hard-coding source
 					element.appendChild( number );
 
 					var symbol = document.createElement( 'div' );
 					symbol.className = 'symbol';
 					var elem = document.createElement("img");
 					symbol.appendChild(elem);
-					elem.src = table[i];
+
+					// Flickr
+					photo = photos[i];
+					var src = "http://farm"+ 
+				                    photo.farm +".static.flickr.com/"+ 
+				                    photo.server +"/"+ 
+				                    photo.id +"_"+ 
+				                    photo.secret +"_z.jpg";
+				        
+				        var image = new Image();
+				      //   image.onload = function(){
+				            
+										// $(image).appendTo($('#container'));
+				
+				      //       if(photo.title) {
+				      //           GEO.message(photo.title);                
+				      //       } else {
+				      //           GEO.message('Untitled');
+				      //       }
+				      //   };
+				        image.src = src;
+
+					elem.src = image;
 					elem.setAttribute("height", "90");
 					elem.setAttribute("width", "90");
 					element.appendChild( symbol );
