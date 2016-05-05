@@ -15,12 +15,13 @@ GEO = {
 };
 
 FLICKR = {
-    url: 'http://api.flickr.com/services/rest/',
+    url: 'https://api.flickr.com/services/rest/?',
     params: {
         method:  'flickr.photos.search',
         api_key: 'ebf0d0344b1f200ad29dc4f473b71308',
+        secret: "d54c90fe3d715c4f",
         format:  'json',
-        radius:   15,
+        radius:   1,
         has_geo:  1,
         nojsoncallback: 1
     },
@@ -86,3 +87,4 @@ FLICKR = {
 }
 
 window.onload = GEO.getGeo;
+
