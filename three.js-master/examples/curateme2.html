@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Curate Me</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			html, body {
+				height: 100%;
+			}
+
+			body {
+				background-color: #000000;
+				margin: 0;
+				font-family: Helvetica, sans-serif;;
+				overflow: hidden;
+			}
+
+			a {
+				color: #ffffff;
+			}
+
+			#info {
+				position: absolute;
+				width: 100%;
+				color: #ffffff;
+				padding: 5px;
+				font-family: Monospace;
+				font-size: 13px;
+				font-weight: bold;
+				text-align: center;
+				z-index: 1;
+			}
+
+			#menu {
+				position: absolute;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
+			}
+
+			.element {
+				width: 120px;
+				height: 160px;
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+				border: 1px solid rgba(127,255,255,0.25);
+				text-align: center;
+				cursor: default;
+			}
+
+			.element:hover {
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+				border: 1px solid rgba(127,255,255,0.75);
+			}
+
+				.element .number {
+					position: absolute;
+					top: 20px;
+					right: 20px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
+				}
+
+				.element .symbol {
+					position: absolute;
+					top: 40px;
+					left: 0px;
+					right: 0px;
+					font-size: 60px;
+					font-weight: bold;
+					color: rgba(255,255,255,0.75);
+					text-shadow: 0 0 10px rgba(0,255,255,0.95);
+				}
+
+				.element .details {
+					position: absolute;
+					bottom: 15px;
+					left: 0px;
+					right: 0px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
+				}
+
+			button {
+				color: rgba(127,255,255,0.75);
+				background: transparent;
+				outline: 1px solid rgba(127,255,255,0.75);
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,0.75);
+			}
+		</style>
+	</head>
+	<body>
+		<script src="../build/three.js"></script>
+		<script src="js/effects/StereoEffect.js"></script>
+		<script src="js/libs/tween.min.js"></script>
+		<script src="js/controls/TrackballControls.js"></script>
+		<script src="js/renderers/CSS3DRenderer.js"></script>
+
+		<div id="container"></div>
+		<div id="menu">
+			<button id="sphere">SPHERE</button>
+			<button id="helix">HELIX</button>
+			<button id="grid">GRID</button>
+		</div>
+
+		<script>
+
+			var table = [
+				"http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Helium", "4.002602", 18, 1,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Lithium", "6.941", 1, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Beryllium", "9.012182", 2, 2,
+				"http://puu.sh/oGwWN/28077326b2.png", "Boron", "10.811", 13, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Carbon", "12.0107", 14, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Nitrogen", "14.0067", 15, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Oxygen", "15.9994", 16, 2,
+				"http://puu.sh/oGxgu/d1c5a0b167.png", "Fluorine", "18.9984032", 17, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Neon", "20.1797", 18, 2,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Sodium", "22.98976...", 1, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Magnesium", "24.305", 2, 3,
+				"https://c1.staticflickr.com/3/2008/3529188907_89203c0217_b.jpg", "Aluminium", "26.9815386", 13, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Silicon", "28.0855", 14, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Phosphorus", "30.973762", 15, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Sulfur", "32.065", 16, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Chlorine", "35.453", 17, 3,
+				"http://puu.sh/oGwDe/fff2fa878f.png", "Argon", "39.948", 18, 3,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Potassium", "39.948", 1, 4,
+				"http://puu.sh/oGxea/dd967e44d2.png", "Calcium", "40.078", 2, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Scandium", "44.955912", 3, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Titanium", "47.867", 4, 4,
+				"http://www.architecturalrecord.com/ext/resources/archives/features/critique/images/0705critique2.jpg", "Vanadium", "50.9415", 5, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Chromium", "51.9961", 6, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Manganese", "54.938045", 7, 4,
+				"http://puu.sh/oGxmb/fbb4d43201.png", "Iron", "55.845", 8, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Cobalt", "58.933195", 9, 4,
+				"http://puu.sh/oGwZg/d8a8285f33.png", "Nickel", "58.6934", 10, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Copper", "63.546", 11, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Zinc", "65.38", 12, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Gallium", "69.723", 13, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Germanium", "72.63", 14, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Arsenic", "74.9216", 15, 4,
+				"http://www.skgproject.com/wp-content/uploads/2009/03/img_02842-300x225.jpg", "Selenium", "78.96", 16, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Bromine", "79.904", 17, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Krypton", "83.798", 18, 4,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Rubidium", "85.4678", 1, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Strontium", "87.62", 2, 5,
+				"http://puu.sh/oGwDe/fff2fa878f.png", "Yttrium", "88.90585", 3, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Zirconium", "91.224", 4, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Niobium", "92.90628", 5, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Molybdenum", "95.96", 6, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Technetium", "(98)", 7, 5,
+				"http://photos1.blogger.com/img/124/5512/640/stata_interior_entrance.jpg", "Ruthenium", "101.07", 8, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Rhodium", "102.9055", 9, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Palladium", "106.42", 10, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Silver", "107.8682", 11, 5,
+				"http://static1.squarespace.com/static/525c75e5e4b09c0a127ba258/535700f3e4b0342a4d2508ae/5359c4ffe4b04f427164d26a/1430304286752/_DSC0179.jpg", "Cadmium", "112.411", 12, 5,
+				"tweet1.png", "Indium", "114.818", 13, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Tin", "118.71", 14, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Antimony", "121.76", 15, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Tellurium", "127.6", 16, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Iodine", "126.90447", 17, 5,
+				"https://upload.wikimedia.org/wikipedia/commons/c/cc/Stata_Center-20050310-3.jpg", "Xenon", "131.293", 18, 5,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Caesium", "132.9054", 1, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Barium", "132.9054", 2, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Lanthanum", "138.90547", 4, 9,
+				"http://puu.sh/oGxoL/0dc57f00d9.png", "Cerium", "140.116", 5, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Praseodymium", "140.90765", 6, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Neodymium", "144.242", 7, 9,
+				"https://c1.staticflickr.com/3/2753/4309860324_54e2c4b505_b.jpg", "Promethium", "(145)", 8, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Samarium", "150.36", 9, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Europium", "151.964", 10, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Gadolinium", "157.25", 11, 9,
+				"http://puu.sh/oGwMp/14d9bb453d.png", "Terbium", "158.92535", 12, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Dysprosium", "162.5", 13, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Holmium", "164.93032", 14, 9,
+				"http://1950.alumclass.mit.edu/s/1314/images/gid43/editor/55th_reunion/11-6-03.mit_scenes_22.JPG", "Erbium", "167.259", 15, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Thulium", "168.93421", 16, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Ytterbium", "173.054", 17, 9,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Lutetium", "174.9668", 18, 9,
+				"http://puu.sh/oGwKv/f18c4fc2ee.png", "Hafnium", "178.49", 4, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Tantalum", "180.94788", 5, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Tungsten", "183.84", 6, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Rhenium", "186.207", 7, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Osmium", "190.23", 8, 6,
+				"https://s-media-cache-ak0.pinimg.com/236x/64/61/5d/64615d9f141e4b23f31a0cbf00a0f38d.jpg", "Iridium", "192.217", 9, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Platinum", "195.084", 10, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Gold", "196.966569", 11, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Mercury", "200.59", 12, 6,
+				"http://puu.sh/oGwxK/b6ca005d76.png", "Thallium", "204.3833", 13, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Lead", "207.2", 14, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Bismuth", "208.9804", 15, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Polonium", "(209)", 16, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Astatine", "(210)", 17, 6,
+				"https://www.wired.com/wp-content/uploads/archive/wired/archive/12.05/images/FF_194_mit1_f.jpg", "Radon", "(222)", 18, 6,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Francium", "(223)", 1, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Radium", "(226)", 2, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Actinium", "(227)", 4, 10,
+				"http://puu.sh/oGwBm/cee064f38b.png", "Thorium", "232.03806", 5, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Protactinium", "231.0588", 6, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Uranium", "238.02891", 7, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Neptunium", "(237)", 8, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Plutonium", "(244)", 9, 10,
+				"http://cache.boston.com/bonzai-fba/Original_Photo/2007/03/12/1173707524_1532.jpg", "Americium", "(243)", 10, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Curium", "(247)", 11, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Berkelium", "(247)", 12, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Californium", "(251)", 13, 10,
+				"http://puu.sh/oGwGS/c711cd9095.png", "Einstenium", "(252)", 14, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Fermium", "(257)", 15, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Mendelevium", "(258)", 16, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Nobelium", "(259)", 17, 10,
+				"http://graphics8.nytimes.com/images/2004/12/26/arts/26pogr3.650.jpg", "Lawrencium", "(262)", 18, 10,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Rutherfordium", "(267)", 4, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Dubnium", "(268)", 5, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Seaborgium", "(271)", 6, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Bohrium", "(272)", 7, 7,
+				"http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hassium", "(270)", 8, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Meitnerium", "(276)", 9, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Darmstadium", "(281)", 10, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Roentgenium", "(280)", 11, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Copernicium", "(285)", 12, 7,
+				"http://graphics8.nytimes.com/images/2004/12/26/arts/26pogr3.jpg", "Unutrium", "(284)", 13, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Flerovium", "(289)", 14, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Ununpentium", "(288)", 15, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Livermorium", "(293)", 16, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Ununseptium", "(294)", 17, 7,
+				"https://i.vimeocdn.com/portrait/58832_300x300.jpg", "Ununoctium", "(294)", 18, 7
+			];
+
+			var camera, scene, renderer, effect;
+			var controls;
+
+			var objects = [];
+			var targets = { table: [], sphere: [], helix: [], grid: [] };
+
+			init();
+			animate();
+
+			function init() {
+
+				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.z = 3000;
+
+				scene = new THREE.Scene();
+
+				// table
+
+				for ( var i = 0; i < table.length; i += 5 ) {
+
+					var element = document.createElement( 'div' );
+					element.className = 'element';
+					element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
+
+					var number = document.createElement( 'div' );
+					number.className = 'number';
+					number.textContent = 'source';
+					element.appendChild( number );
+
+					var symbol = document.createElement( 'div' );
+					symbol.className = 'symbol';
+					var elem = document.createElement("img");
+					symbol.appendChild(elem);
+					elem.src = table[i];
+					elem.setAttribute("height", "90");
+					elem.setAttribute("width", "90");
+					element.appendChild( symbol );
+
+					var details = document.createElement( 'div' );
+					details.className = 'details';
+					details.innerHTML = 'caption';
+					element.appendChild( details );
+
+					var object = new THREE.CSS3DObject( element );
+					object.position.x = Math.random() * 4000 - 2000;
+					object.position.y = Math.random() * 4000 - 2000;
+					object.position.z = Math.random() * 4000 - 2000;
+					scene.add( object );
+
+					objects.push( object );
+
+					//
+
+					var object = new THREE.Object3D();
+					object.position.x = ( table[ i + 3 ] * 140 ) - 1330;
+					object.position.y = - ( table[ i + 4 ] * 180 ) + 990;
+
+					targets.table.push( object );
+
+				}
+
+				// sphere
+
+				var vector = new THREE.Vector3();
+
+				for ( var i = 0, l = objects.length; i < l; i ++ ) {
+
+					var phi = Math.acos( -1 + ( 2 * i ) / l );
+					var theta = Math.sqrt( l * Math.PI ) * phi;
+
+					var object = new THREE.Object3D();
+
+					object.position.x = 800 * Math.cos( theta ) * Math.sin( phi );
+					object.position.y = 800 * Math.sin( theta ) * Math.sin( phi );
+					object.position.z = 800 * Math.cos( phi );
+
+					vector.copy( object.position ).multiplyScalar( 2 );
+
+					object.lookAt( vector );
+
+					targets.sphere.push( object );
+
+				}
+
+				// helix
+
+				var vector = new THREE.Vector3();
+
+				for ( var i = 0, l = objects.length; i < l; i ++ ) {
+
+					var phi = i * 0.175 + Math.PI;
+
+					var object = new THREE.Object3D();
+
+					object.position.x = 900 * Math.sin( phi );
+					object.position.y = - ( i * 8 ) + 450;
+					object.position.z = 900 * Math.cos( phi );
+
+					vector.x = object.position.x * 2;
+					vector.y = object.position.y;
+					vector.z = object.position.z * 2;
+
+					object.lookAt( vector );
+
+					targets.helix.push( object );
+
+				}
+
+				// grid
+
+				for ( var i = 0; i < objects.length; i ++ ) {
+
+					var object = new THREE.Object3D();
+
+					object.position.x = ( ( i % 5 ) * 400 ) - 800;
+					object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
+					object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
+
+					targets.grid.push( object );
+
+				}
+
+				//
+
+				renderer = new THREE.CSS3DRenderer();
+				//renderer.domElement.style.position = 'absolute';
+				//renderer.setPixelRatio( window.devicePixelRatio );
+				
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				effect = new THREE.StereoEffect( renderer );
+				effect.setSize( window.innerWidth, window.innerHeight );
+
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+				//
+
+				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 500;
+				controls.maxDistance = 6000;
+				controls.addEventListener( 'change', render );
+
+				/*
+				var button = document.getElementById( 'table' );
+				button.addEventListener( 'click', function ( event ) {
+
+					transform( targets.table, 2000 );
+
+				}, false );
+				*/
+
+				var button = document.getElementById( 'sphere' );
+				button.addEventListener( 'click', function ( event ) {
+
+					transform( targets.sphere, 2000 );
+
+				}, false );
+
+				var button = document.getElementById( 'helix' );
+				button.addEventListener( 'click', function ( event ) {
+
+					transform( targets.helix, 2000 );
+
+				}, false );
+
+				var button = document.getElementById( 'grid' );
+				button.addEventListener( 'click', function ( event ) {
+
+					transform( targets.grid, 2000 );
+
+				}, false );
+
+				transform( targets.sphere, 2000 );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function transform( targets, duration ) {
+
+				TWEEN.removeAll();
+
+				for ( var i = 0; i < objects.length; i ++ ) {
+
+					var object = objects[ i ];
+					var target = targets[ i ];
+
+					new TWEEN.Tween( object.position )
+						.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+
+					new TWEEN.Tween( object.rotation )
+						.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+
+				}
+
+				new TWEEN.Tween( this )
+					.to( {}, duration * 2 )
+					.onUpdate( render )
+					.start();
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				render();
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				TWEEN.update();
+
+				controls.update();
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+	</body>
+</html>
