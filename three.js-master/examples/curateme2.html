@@ -100,11 +100,12 @@
 	</head>
 	<body>
 		<script src="../build/three.js"></script>
-		<script src="js/effects/StereoEffect.js"></script>
 		<script src="js/libs/tween.min.js"></script>
 		<script src="js/controls/TrackballControls.js"></script>
 		<script src="js/renderers/CSS3DRenderer.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="js/controls/DeviceOrientationControls.js"></script>
+		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
 
 		<div id="container"></div>
 		<div id="menu">
@@ -149,13 +150,17 @@
 
 				//
 
-				renderer = new THREE.CSS3DRenderer();
+				renderer = new THREE.CSS3DStereoRenderer();;
+				//renderer = new THREE.WebGLRenderer();
+				//renderer.setPixelRatio( window.devicePixelRatio );
+				//renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				//renderer.domElement.style.position = "absolute";
 				//renderer.domElement.style.position = 'absolute';
 				//renderer.setPixelRatio( window.devicePixelRatio );
 				
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
-				effect = new THREE.StereoEffect( renderer );
+				//effect = new THREE.StereoEffect( renderer );
 				//effect.setSize( window.innerWidth, window.innerHeight );
 
 				document.getElementById( 'container' ).appendChild( renderer.domElement );
