@@ -436,10 +436,10 @@
 					var phi = i * 0.175 + Math.PI;
 
 					var object = new THREE.Object3D();
-
-					object.position.x = 900 * Math.sin( phi );
-					object.position.y = - ( i * 8 ) + 450;
-					object.position.z = 900 * Math.cos( phi );
+					var radius=2800;
+					object.position.x = radius * Math.sin( phi );
+					object.position.y = - ( i * 24 ) + radius/2;
+					object.position.z = radius * Math.cos( phi );
 
 					vector.x = object.position.x * 2;
 					vector.y = object.position.y;
@@ -457,8 +457,8 @@
 
 					var object = new THREE.Object3D();
 
-					object.position.x = ( ( i % 5 ) * 400 ) - 800;
-					object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 400 ) + 800;
+					object.position.x = ( ( i % 5 ) * 1200 ) - 2400;
+					object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 1200 ) + 2400;
 					object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
 
 					targets.grid.push( object );
@@ -497,14 +497,14 @@
 
 				var button = document.getElementById( 'sphere' );
 				button.addEventListener( 'click', function ( event ) {
-
+					controls.minDistance = 3500;
 					transform( targets.sphere, 2000 );
 
 				}, false );
 
 				var button = document.getElementById( 'helix' );
 				button.addEventListener( 'click', function ( event ) {
-
+					controls.minDistance = 3500;
 					transform( targets.helix, 2000 );
 
 				}, false );
@@ -512,6 +512,7 @@
 				var button = document.getElementById( 'grid' );
 				button.addEventListener( 'click', function ( event ) {
 
+					controls.minDistance = 400;
 					transform( targets.grid, 2000 );
 
 				}, false );
@@ -527,9 +528,14 @@
 			function transform( targets, duration ) {
 
 				TWEEN.removeAll();
+				new TWEEN.Tween( camera.position )
+						.to( { x: camera.position.x, y: camera.position.y, z: 10000 }, Math.random() * duration + duration/2 )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
 
 				for ( var i = 0; i < objects.length; i ++ ) {
-
+					if(camera.po)
+					camera.position.z
 					var object = objects[ i ];
 					var target = targets[ i ];
 
@@ -544,7 +550,7 @@
 						.start();
 
 				}
-
+				camera.position.z = 10000;
 				new TWEEN.Tween( this )
 					.to( {}, duration * 2 )
 					.onUpdate( render )
