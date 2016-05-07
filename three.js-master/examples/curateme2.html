@@ -40,8 +40,8 @@
 			}
 
 			.element {
-				width: 120px;
-				height: 160px;
+				width: 360px;
+				height: 480px;
 				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
 				border: 1px solid rgba(127,255,255,0.25);
 				text-align: center;
@@ -247,10 +247,10 @@
 			function init() {
 
 				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.z = 3000;
+				camera.position.z = 10000;
 
 				scene = new THREE.Scene();
-
+				/*
 				GEO = {
     
 				    getGeo: function() {
@@ -338,7 +338,7 @@
 				
 				GEO.getGeo;
 				console.log(FLICKR.search);
-
+				*/
 				for ( var i = 0; i < table.length; i += 5 ) {
 
 					var element = document.createElement( 'div' );
@@ -354,7 +354,7 @@
 					symbol.className = 'symbol';
 					var elem = document.createElement("img");
 					symbol.appendChild(elem);
-
+					/*
 					// Flickr
 					photo = photos[i];
 					var src = "http://farm"+ 
@@ -375,10 +375,10 @@
 				      //       }
 				      //   };
 				        image.src = src;
-
-					elem.src = image;
-					elem.setAttribute("height", "90");
-					elem.setAttribute("width", "90");
+					*/
+					elem.src = table[i];
+					elem.setAttribute("max-height", "400");
+					elem.setAttribute("width", "300");
 					element.appendChild( symbol );
 
 					var details = document.createElement( 'div' );
@@ -414,10 +414,10 @@
 					var theta = Math.sqrt( l * Math.PI ) * phi;
 
 					var object = new THREE.Object3D();
-
-					object.position.x = 800 * Math.cos( theta ) * Math.sin( phi );
-					object.position.y = 800 * Math.sin( theta ) * Math.sin( phi );
-					object.position.z = 800 * Math.cos( phi );
+					var radius=2800;
+					object.position.x = radius * Math.cos( theta ) * Math.sin( phi );
+					object.position.y = radius * Math.sin( theta ) * Math.sin( phi );
+					object.position.z = radius * Math.cos( phi );
 
 					vector.copy( object.position ).multiplyScalar( 2 );
 
@@ -482,8 +482,8 @@
 
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 0.5;
-				controls.minDistance = 500;
-				controls.maxDistance = 6000;
+				controls.minDistance = 3500;
+				controls.maxDistance = 12000;
 				controls.addEventListener( 'change', render );
 
 				/*
