@@ -133,7 +133,36 @@
 
             var lat; var lon;
 
+            //loading image
+        	var loadelem = document.createElement("img");
+			loadelem.src = "loading.gif";
+			loadelem.setAttribute("max-height", "400");
+			loadelem.setAttribute("width", "300");
+			var loadobject = new THREE.CSS3DObject( loadelem );
+			loadobject.position.x =0;
+			loadobject.position.y = 0;
+			loadobject.position.z = 0;
+
             function getLocation() {
+			
+				scene.add( loadobject);
+
+				//
+
+				renderer = new THREE.CSS3DRenderer();
+				//renderer.domElement.style.position = 'absolute';
+				//renderer.setPixelRatio( window.devicePixelRatio );
+				
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				effect = new THREE.StereoEffect( renderer );
+				//effect.setSize( window.innerWidth, window.innerHeight );
+
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
+
+				//
+				renderer.render( scene, camera );
+
                navigator.geolocation.getCurrentPosition(callback);
             }
              
@@ -215,7 +244,7 @@
 			}
 
 			function init() {
-
+				scene.remove( loadobject);
 				// sphere
 				var vector = new THREE.Vector3();
 
@@ -273,21 +302,6 @@
 					targets.grid.push( object );
 
 				}
-
-				//
-
-				renderer = new THREE.CSS3DRenderer();
-				//renderer.domElement.style.position = 'absolute';
-				//renderer.setPixelRatio( window.devicePixelRatio );
-				
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-				effect = new THREE.StereoEffect( renderer );
-				//effect.setSize( window.innerWidth, window.innerHeight );
-
-				document.getElementById( 'container' ).appendChild( renderer.domElement );
-
-				//
 
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 0.5;
