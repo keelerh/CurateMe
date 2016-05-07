@@ -128,7 +128,7 @@
 
 			//initialize camera
 			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
-			camera.position.z = 3000;
+			camera.position.z = 3200; //camera position for loading screen
 
 			scene = new THREE.Scene();
 
@@ -311,7 +311,7 @@
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 0.5;
 				controls.minDistance = 3500;
-				controls.maxDistance = 12000;
+				controls.maxDistance = 16000;
 				controls.addEventListener( 'change', render );
 
 				/*
@@ -354,10 +354,10 @@
 			}
 
 			function transform( targets, duration ) {
-
+				var startDist = 12000; //initial camera distance
 				TWEEN.removeAll();
 				new TWEEN.Tween( camera.position )
-						.to( { x: camera.position.x, y: camera.position.y, z: 10000 }, Math.random() * duration + duration/3 )
+						.to( { x: camera.position.x, y: camera.position.y, z: startDist }, Math.random() * duration + duration/3 )
 						.easing( TWEEN.Easing.Exponential.InOut )
 						.start();
 
@@ -378,7 +378,6 @@
 						.start();
 
 				}
-				camera.position.z = 10000;
 				new TWEEN.Tween( this )
 					.to( {}, duration * 2 )
 					.onUpdate( render )
