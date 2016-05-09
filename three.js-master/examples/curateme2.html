@@ -40,8 +40,8 @@
 			}
 
 			.element {
-				width: 360px;
-				height: 480px;
+				width: 180px;
+				height: 240px;
 				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
 				border: 1px solid rgba(127,255,255,0.25);
 				text-align: center;
@@ -104,8 +104,9 @@
 		<script src="js/controls/TrackballControls.js"></script>
 		<script src="js/renderers/CSS3DRenderer.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script src="js/controls/DeviceOrientationControls.js"></script>
 		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
+		<script src="js/controls/DeviceOrientationController.js"></script>
+		<script src="js/controls/DeviceOrientationControls.js"></script>
 
 		<div id="container"></div>
 		<div id="menu">
@@ -115,7 +116,7 @@
 		</div>
 
 		<script>
-
+			document.getElementById('container').webkitRequestFullscreen();
 		// url, source, caption
 		// "http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1
 
@@ -150,7 +151,7 @@
 
 				//
 
-				renderer = new THREE.CSS3DStereoRenderer();;
+				renderer = new THREE.CSS3DStereoRenderer();
 				//renderer = new THREE.WebGLRenderer();
 				//renderer.setPixelRatio( window.devicePixelRatio );
 				//renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
@@ -167,13 +168,20 @@
 
 				//
 				renderer.render( scene, camera );
+				
+				var position;
 
-               navigator.geolocation.getCurrentPosition(callback);
+				callback(position);
+
+               //navigator.geolocation.getCurrentPosition(callback);
             }
              
             function callback(position) {
-               lat = position.coords.latitude;
-               lon = position.coords.longitude;
+            	console.log("got here");
+            	lat=42.359276907872704;
+				lon=-71.09365490761157
+               //lat = position.coords.latitude;
+               //lon = position.coords.longitude;
                $.ajax({
 			  	url: 'https://api.flickr.com/services/rest/?',
 			  	data: {
@@ -205,11 +213,12 @@
               	  }
               	  makeArray(images);
               	}
-            });	
-            }	 
+            });
+            }
 
             function makeArray(images) {
-				for ( var i = 0; i < 118; i += 1 ) {
+            	var number_of_images=30;
+				for ( var i = 0; i < number_of_images; i += 1 ) {
 
 					var element = document.createElement( 'div' );
 					element.className = 'element';
@@ -227,8 +236,8 @@
 
 					// Flickr
 					elem.src = images[i][1];
-					elem.setAttribute("max-height", "400");
-					elem.setAttribute("width", "300");
+					elem.setAttribute("max-height", "200");
+					elem.setAttribute("width", "160");
 					element.appendChild( symbol );
 
 					var details = document.createElement( 'div' );
@@ -259,7 +268,7 @@
 					var theta = Math.sqrt( l * Math.PI ) * phi;
 
 					var object = new THREE.Object3D();
-					var radius=2800;
+					var radius=1000;
 					object.position.x = radius * Math.cos( theta ) * Math.sin( phi );
 					object.position.y = radius * Math.sin( theta ) * Math.sin( phi );
 					object.position.z = radius * Math.cos( phi );
@@ -307,13 +316,26 @@
 					targets.grid.push( object );
 
 				}
-
+				
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 1500;
+				controls.maxDistance = 8000;
+				controls.addEventListener( 'change', render );
+				
+				
+				//controls = new DeviceOrientationController( camera, renderer.domElement );
+				//controls.connect();
+				//controls = new THREE.DeviceOrientationControls(camera);
+				
+				//setupControllerEventHandlers( controls );
+				/*
 				controls.rotateSpeed = 0.5;
 				controls.minDistance = 3500;
 				controls.maxDistance = 16000;
-				controls.addEventListener( 'change', render );
-
+				*/
+				//controls2.addEventListener( 'change', render );
+				
 				/*
 				var button = document.getElementById( 'table' );
 				button.addEventListener( 'click', function ( event ) {
@@ -325,14 +347,14 @@
 
 				var button = document.getElementById( 'sphere' );
 				button.addEventListener( 'click', function ( event ) {
-					controls.minDistance = 3500;
+					//controls.minDistance = 3500;
 					transform( targets.sphere, 2000 );
 
 				}, false );
 
 				var button = document.getElementById( 'helix' );
 				button.addEventListener( 'click', function ( event ) {
-					controls.minDistance = 3500;
+					//controls.minDistance = 3500;
 					transform( targets.helix, 2000 );
 
 				}, false );
@@ -340,7 +362,7 @@
 				var button = document.getElementById( 'grid' );
 				button.addEventListener( 'click', function ( event ) {
 
-					controls.minDistance = 400;
+					//controls.minDistance = 400;
 					transform( targets.grid, 2000 );
 
 				}, false );
@@ -354,7 +376,7 @@
 			}
 
 			function transform( targets, duration ) {
-				var startDist = 12000; //initial camera distance
+				var startDist = 6000; //initial camera distance
 				TWEEN.removeAll();
 				new TWEEN.Tween( camera.position )
 						.to( { x: camera.position.x, y: camera.position.y, z: startDist }, Math.random() * duration + duration/3 )
@@ -404,6 +426,8 @@
 
 				controls.update();
 
+				renderer.render( scene, camera );
+
 			}
 
 			function render() {
@@ -411,7 +435,45 @@
 				renderer.render( scene, camera );
 
 			}
-			getLocation();
+
+			function setupControllerEventHandlers( controls ) {
+
+				// Listen for manual interaction (zoom OR rotate)
+				/*
+				controls.addEventListener( 'userinteractionstart', function () {
+					renderer.domElement.style.cursor = 'move';
+					controllerSelectorEl.style.display = 'none';
+				});
+
+				controls.addEventListener( 'userinteractionend', function () {
+					renderer.domElement.style.cursor = 'default';
+					controllerSelectorEl.style.display = 'inline-block';
+				});
+
+				// Listen for manual rotate interaction
+
+				controls.addEventListener( 'rotatestart', function () {
+					controllerEl.innerText = 'Manual Rotate';
+				});
+
+				controls.addEventListener( 'rotateend', function () {
+					controllerEl.innerText = controllerDefaultText;
+				});
+
+				// Listen for manual zoom interaction
+
+				controls.addEventListener( 'zoomstart', function () {
+					controllerEl.innerText = 'Manual Zoom';
+				});
+
+				controls.addEventListener( 'zoomend', function () {
+					controllerEl.innerText = controllerDefaultText;
+				});
+				*/
+			}
+			$( document ).ready(function() {
+				getLocation();
+			});
 		</script>
 	</body>
 </html>

@@ -60,13 +60,14 @@ THREE.DeviceOrientationControls = function( object ) {
 	}();
 
 	this.connect = function() {
-
+		/*
 		onScreenOrientationChangeEvent(); // run once on load
 
 		window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
 		window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
 		scope.enabled = true;
+		*/
 
 	};
 
@@ -87,8 +88,8 @@ THREE.DeviceOrientationControls = function( object ) {
 		var beta = scope.deviceOrientation.beta ? THREE.Math.degToRad( scope.deviceOrientation.beta ) : 0; // X'
 		var gamma = scope.deviceOrientation.gamma ? THREE.Math.degToRad( scope.deviceOrientation.gamma ) : 0; // Y''
 		var orient = scope.screenOrientation ? THREE.Math.degToRad( scope.screenOrientation ) : 0; // O
-
-		setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
+		console.log(alpha);
+		//setObjectQuaternion( scope.object.quaternion, alpha, beta, gamma, orient );
 		this.alpha = alpha;
 
 	};
