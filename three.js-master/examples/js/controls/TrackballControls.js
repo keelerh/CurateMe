@@ -6,6 +6,7 @@
  */
 
 THREE.TrackballControls = function ( object, domElement ) {
+	console.log("controls here");
 
 	var _this = this;
 	var STATE = { NONE: - 1, ROTATE: 0, ZOOM: 1, PAN: 2, TOUCH_ROTATE: 3, TOUCH_ZOOM_PAN: 4 };
@@ -56,6 +57,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	_zoomStart = new THREE.Vector2(),
 	_zoomEnd = new THREE.Vector2(),
+	_zoomMode = 0,
 
 	_touchZoomDistanceStart = 0,
 	_touchZoomDistanceEnd = 0,
@@ -102,6 +104,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 	};
 
 	this.handleEvent = function ( event ) {
+		console.log("event");
 
 		if ( typeof this[ event.type ] == 'function' ) {
 
@@ -353,18 +356,26 @@ THREE.TrackballControls = function ( object, domElement ) {
 	// listeners
 
 	function keydown( event ) {
-
 		if ( _this.enabled === false ) return;
 
 		window.removeEventListener( 'keydown', keydown );
 
 		_prevState = _state;
-
+		
 		if ( _state !== STATE.NONE ) {
 
 			return;
 
 		} else if ( event.keyCode === _this.keys[ STATE.ROTATE ] && ! _this.noRotate ) {
+			console.log(event.keyCode);
+			
+			timer1=setInterval(function(){
+				var factor=1.5;
+				if(_zoomMode==1){
+					factor*=-1;
+				}
+          		_zoomStart.y += factor * 0.01;
+    		}, 100); // the above code is executed every 100 ms
 
 			_state = STATE.ROTATE;
 
@@ -383,7 +394,10 @@ THREE.TrackballControls = function ( object, domElement ) {
 	function keyup( event ) {
 
 		if ( _this.enabled === false ) return;
-
+		if (timer1) {
+			clearInterval(timer1);
+			_zoomMode=1-_zoomMode;
+		}
 		_state = _prevState;
 
 		window.addEventListener( 'keydown', keydown, false );
@@ -422,7 +436,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		document.addEventListener( 'mousemove', mousemove, false );
 		document.addEventListener( 'mouseup', mouseup, false );
-
+		
 		_this.dispatchEvent( startEvent );
 
 	}
@@ -498,6 +512,14 @@ THREE.TrackballControls = function ( object, domElement ) {
 	function touchstart( event ) {
 
 		if ( _this.enabled === false ) return;
+		console.log("touch");
+		timer2=setInterval(function(){
+			var factor=1.5;
+			if(_zoomMode==1){
+				factor*=-1;
+			}
+      		_zoomStart.y += factor * 0.01;
+		}, 100); // the above code is executed every 100 ms
 
 		switch ( event.touches.length ) {
 
@@ -511,12 +533,14 @@ THREE.TrackballControls = function ( object, domElement ) {
 				_state = STATE.TOUCH_ZOOM_PAN;
 				var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
 				var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
-				_touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
-
+				//_touchZoomDistanceEnd = _touchZoomDistanceStart = Math.sqrt( dx * dx + dy * dy );
+				////_touchZoomDistanceEnd = _touchZoomDistanceStart = 100;
+				/*
 				var x = ( event.touches[ 0 ].pageX + event.touches[ 1 ].pageX ) / 2;
 				var y = ( event.touches[ 0 ].pageY + event.touches[ 1 ].pageY ) / 2;
 				_panStart.copy( getMouseOnScreen( x, y ) );
 				_panEnd.copy( _panStart );
+				*/
 				break;
 
 		}
@@ -556,6 +580,11 @@ THREE.TrackballControls = function ( object, domElement ) {
 	function touchend( event ) {
 
 		if ( _this.enabled === false ) return;
+
+		if (timer2) {
+			clearInterval(timer2);
+			_zoomMode=1-_zoomMode;
+		}
 
 		switch ( event.touches.length ) {
 
