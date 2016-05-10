@@ -8,6 +8,38 @@
 			html, body {
 				height: 100%;
 			}
+			
+			#splash_screen_title {
+				text-align: center;
+				font-size: 350%;
+				padding-bottom: 0px;
+				margin-bottom: 0px;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+
+			#team_members{
+				margin-top: 0px;
+				font-size: 80%;
+				text-align: center;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+
+			#welcome_message{
+				margin: auto;
+				max-width: 500px;
+				text-align: center;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+			
+			#start_button{
+				margin: auto;
+				text-align: center;
+				display: block;
+				margin-top: 10px;
+			}
 
 			body {
 				background-color: #000000;
@@ -104,9 +136,18 @@
 		<script src="js/controls/TrackballControls.js"></script>
 		<script src="js/renderers/CSS3DRenderer.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="js/full_screen/full_screen.js"></script>
 		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
 		<script src="js/controls/DeviceOrientationControls.js"></script>
 
+		<div id="splash_screen">
+			<h1 id="splash_screen_title">Curate Me</h1>
+			<p id="team_members">Julia Guo | Keeley Erhardt | David Mayo | Alan Casallas</p>
+			<p id="welcome_message">Welcome to CurateMe, a virtual reality experience that lets you view the world as others see it by viewing the images, texts, and thoughts they have published online. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
+			<button id="start_button">Start</button>
+		</div>
+		
+		
 		<div id="container"></div>
 		<div id="menu">
 			<button id="sphere">SPHERE</button>
@@ -115,7 +156,7 @@
 		</div>
 
 		<script>
-			document.getElementById('container').webkitRequestFullscreen();
+			//document.getElementById('container').webkitRequestFullscreen();
 		// url, source, caption
 		// "http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1
 
@@ -471,8 +512,19 @@
 				*/
 			}
 			$( document ).ready(function() {
-				getLocation();
+				$("#container").hide();
+				$("#menu").hide();
+				$("#start_button").click(function() {
+					$("#container").show();
+					$("#menu").show();
+					$("#splash_screen").hide();
+					toggleFullScreen(document.body);
+					getLocation();
+				});
 			});
+			
+			
+			
 		</script>
 	</body>
 </html>

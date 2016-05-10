@@ -15,10 +15,6 @@ var config = {
 var twitter = new Twitter(config);
 
 
-app.get('/', function(req, res){
-  res.sendfile('three.js-master/examples/curateme2.html');
-});
-
 
 //This gets the server ready to respond to the /gettweet REST endpoint. Usage is: /gettweet?geocode={float-lattitude},{float-longitude},{float-radius}mi&count={integer-count}"
 app.get('/gettweet', function (req, res) {
