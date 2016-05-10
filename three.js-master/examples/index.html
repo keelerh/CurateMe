@@ -258,6 +258,10 @@
 
             function makeArray(images) {
             	var number_of_images=30;
+				if (images.length < number_of_images) {
+					number_of_images = images.length;
+				}
+				
 				for ( var i = 0; i < number_of_images; i += 1 ) {
 
 					var element = document.createElement( 'div' );

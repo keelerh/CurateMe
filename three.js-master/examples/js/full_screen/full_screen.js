@@ -1,11 +1,3 @@
-<html>
-<head>
-<title>Curate Me</title>
-<script src="jquery-2.2.1.min.js"></script>
-</head>
-<body>
-
-<script>
 function toggleFullScreen(elem) {
     // ## The below if statement seems to work better ## if ((document.fullScreenElement && document.fullScreenElement !== null) || (document.msfullscreenElement && document.msfullscreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
     if ((document.fullScreenElement !== undefined && document.fullScreenElement === null) || (document.msFullscreenElement !== undefined && document.msFullscreenElement === null) || (document.mozFullScreen !== undefined && !document.mozFullScreen) || (document.webkitIsFullScreen !== undefined && !document.webkitIsFullScreen)) {
@@ -29,21 +21,4 @@ function toggleFullScreen(elem) {
             document.msExitFullscreen();
         }
     }
-}z
-
-
-$(document).ready(function() {
-	$("#start_button").click(function() {
-		toggleFullScreen(document.body);
-		window.location.href='../three.js-master/examples/curateme2.html';
-	});
-})
-
-</script>
-
-<h1>Curate Me</h1>
-<p id="team_members">Julia Guo | Keeley Erhardt | David Mayo | Alan Casallas</p>
-<p>Welcome to CurateMe, a virtual reality experience that displays the images, text, and thoughts of others in your immediate surroundings. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
-<button id="start_button">Start</button>
-</body>
-</html>
+}

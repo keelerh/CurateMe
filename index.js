@@ -3,6 +3,10 @@ var express = require('express');
 var app = express();
 app.use(express.static('three.js-master/examples'));
 
+var server_address = "http://18.189.110.236";
+
+
+
 //Using a node.js Twitter API library that takes care of authentication.
 var Twitter = require('twitter-node-client').Twitter;
 var config = {
@@ -10,7 +14,7 @@ var config = {
 	"consumerSecret": "skUW7jXuzU4kTXVDXmsQ6E3hB0cBZp3dRDjVuzLHrt0g6KWWdw",
 	"accessToken": "717536438884114432-Ri5WYddEPUvg5AZHIhxVmkFyTgL7zo7",
 	"accessTokenSecret": "rwgYdJXC57ZooXFc9yPsNL8NB3TvDkp9NQk2qv1kkNzSg",
-	"callBackUrl": "http://18.189.64.1"
+	"callBackUrl": server_address
 }
 var twitter = new Twitter(config);
 
