@@ -439,10 +439,10 @@ THREE.TrackballControls = function ( object, domElement ) {
 			}
 		}
 
-		console.log("A B G");
-		console.log(alpha);
-		console.log(beta);
-		console.log(gamma);
+		//console.log("A B G");
+		//console.log(alpha);
+		//console.log(beta);
+		//console.log(gamma);
 		var horizontal_threshold=.35;
 		var vertical_threshold=.05;
 		var vertical_offset=-1*1.5;
@@ -451,13 +451,13 @@ THREE.TrackballControls = function ( object, domElement ) {
 		if(alpha>horizontal_threshold){
 			_moveCurr.x=alpha/10.0;
 			_movePrev.x=0;
-			console.log("right");
+			//console.log("right");
 		}
 
 		else if(alpha<horizontal_threshold){
 			_moveCurr.x=alpha/10.0;
 			_movePrev.x=0;
-			console.log("left");
+			//console.log("left");
 		}
 		else{
 			_moveCurr.x=0;
@@ -467,12 +467,12 @@ THREE.TrackballControls = function ( object, domElement ) {
 		if(gamma>0&&Math.abs(gamma+vertical_offset)>vertical_threshold){
 			_moveCurr.y=Math.abs((gamma+vertical_offset)-vertical_threshold)/5.0;
 			_movePrev.y=0;
-			console.log("up");
+			//console.log("up");
 		}
 		else if(gamma<0&&Math.abs(gamma-vertical_offset)>vertical_threshold/3){
 			_moveCurr.y=-1*((Math.abs(gamma-vertical_offset)-vertical_threshold/3)/5.0);
 			_movePrev.y=0;
-			console.log("down");
+			//console.log("down");
 		}
 		else{
 			_moveCurr.y=0;
