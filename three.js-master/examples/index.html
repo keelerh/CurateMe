@@ -8,7 +8,7 @@
 			html, body {
 				height: 100%;
 			}
-			
+
 			#splash_screen_title {
 				text-align: center;
 				font-size: 350%;
@@ -142,6 +142,7 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="js/full_screen/full_screen.js"></script>
 		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
+		<script src="js/controls/DeviceOrientationController.js"></script>
 		<script src="js/controls/DeviceOrientationControls.js"></script>
 
 		<div id="splash_screen">
@@ -150,8 +151,7 @@
 			<p id="welcome_message">Welcome to CurateMe, a virtual reality experience that lets you view the world as others see it by viewing the images, texts, and thoughts they have published online. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
 			<button id="start_button">Start</button>
 		</div>
-		
-		
+
 		<div id="container"></div>
 		<div id="menu">
 			<button id="sphere">SPHERE</button>
@@ -160,7 +160,7 @@
 		</div>
 
 		<script>
-			//document.getElementById('container').webkitRequestFullscreen();
+			document.getElementById('container').webkitRequestFullscreen();
 		// url, source, caption
 		// "http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1
 
@@ -223,7 +223,7 @@
             function callback(position) {
             	console.log("got here");
             	lat=42.359276907872704;
-				lon=-71.09365490761157
+				lon=-71.09365490761157;
                //lat = position.coords.latitude;
                //lon = position.coords.longitude;
                $.ajax({
@@ -262,10 +262,6 @@
 
             function makeArray(images) {
             	var number_of_images=30;
-				if (images.length < number_of_images) {
-					number_of_images = images.length;
-				}
-				
 				for ( var i = 0; i < number_of_images; i += 1 ) {
 
 					var element = document.createElement( 'div' );
@@ -364,6 +360,7 @@
 					targets.grid.push( object );
 
 				}
+				
 				
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 0.5;
@@ -530,9 +527,6 @@
 					getLocation();
 				});
 			});
-			
-			
-			
 		</script>
 	</body>
 </html>
