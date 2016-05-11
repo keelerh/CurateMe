@@ -5,6 +5,8 @@ app.use(express.static('three.js-master/examples'));
 
 var server_address = "http://18.189.111.137";
 
+var AlchemyAPI = require('alchemy-api');
+var alchemy = new AlchemyAPI('6db0abc71b2b08ed44bfd458cc18dad7378e13a0');
 
 
 //Using a node.js Twitter API library that takes care of authentication.
@@ -41,6 +43,8 @@ app.get('/gettweet', function (req, res) {
 			new_obj.screen_name = statuses[i]["user"]["screen_name"];
 			new_obj.text = statuses[i]["text"];
 			new_obj.images = [];
+			new_obj.emotion = "positive";
+			new_obj.emotion_processed = false;
 			//tweets will not have media field populated if the tweet had no image
 			if (statuses[i]["entities"].hasOwnProperty("media")) {
 				media_list = statuses[i]["entities"]["media"];
@@ -50,8 +54,44 @@ app.get('/gettweet', function (req, res) {
 			}
 			pruned_list.push(new_obj);
 		}
+		
+		current_index = 0;
+		
+		
+		
+		function processTweet(err,response) {
+			if (err) throw err;
+			pruned_list[current_index].emotion = response.docSentiment.type;
+			
+			if (current_index < (pruned_list.length-1)) {
+				current_index += 1;
+				alchemy.sentiment(pruned_list[current_index].text,{},processTweet);
+				
+			} else {
+				res.send(JSON.stringify(pruned_list));
+			}
+			
+			
+		}
+		
+		
+		alchemy.sentiment(pruned_list[current_index].text, {}, processTweet);
+		
+		/*
+		//go through every emotion now
+		alchemy.sentiment("I hate you!", {}, function(err, response) {
+			if (err) throw err;
+
+			// See http://www.alchemyapi.com/api/ for format of returned object
+			var sentiment = response.docSentiment;
+			new_obj[0].emotion = sentiment.type;
+			console.log("Sentiment: " + response["docSentiment"]["type"] + " is of type " + typeof(response["docSentiment"]["type"]));
+
+			// Do something with data
+		});*/
+		
 		//send JSON list to client.
-		res.send(JSON.stringify(pruned_list));
+
     });
 })
 
