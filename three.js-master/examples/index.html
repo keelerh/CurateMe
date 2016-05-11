@@ -1,465 +1,538 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<title>three.js / examples</title>
+		<title>Curate Me</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
-
-			@font-face {
-				font-family: 'inconsolata';
-				src: url('files/inconsolata.woff') format('woff');
-				font-weight: normal;
-				font-style: normal;
-			}
-
-			* {
-				box-sizing: border-box;
-			}
-
-			html {
+			html, body {
 				height: 100%;
+			}
+			
+			#splash_screen_title {
+				text-align: center;
+				font-size: 350%;
+				padding-bottom: 0px;
+				margin-bottom: 0px;
+				margin-top: 0px;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+
+			#team_members{
+				margin-top: 0px;
+				font-size: 80%;
+				text-align: center;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+
+			#welcome_message{
+				margin: auto;
+				max-width: 500px;
+				text-align: center;
+				color: rgba(127,255,255,0.75);
+				font-family: "Lucida Sans Unicode","Arial Black";
+			}
+			
+			#start_button{
+				margin: auto;
+				text-align: center;
+				display: block;
+				margin-top: 30px;
+				width: 120px;
+				height: 70px;
+				font-size: 150%;
 			}
 
 			body {
-				background-color: #ffffff;
-				margin: 0px;
-				height: 100%;
-				color: #555;
-				font-family: 'inconsolata';
-				font-size: 15px;
-				line-height: 18px;
+				background-color: #000000;
+				margin: 0;
+				font-family: Helvetica, sans-serif;;
 				overflow: hidden;
 			}
 
-			h1 {
-				margin-top: 30px;
-				margin-bottom: 40px;
-				margin-left: 20px;
-				font-size: 25px;
-				font-weight: normal;
-			}
-
-			h2 {
-				font-size: 20px;
-				font-weight: normal;
-			}
-
 			a {
-				color: #2194CE;
-				text-decoration: none;
+				color: #ffffff;
 			}
 
-			#panel {
-				position: fixed;
-				left: 0px;
-				width: 310px;
-				height: 100%;
-				overflow: auto;
-				background: #fafafa;
-			}
-
-			#panel #content {
-				padding: 0px 20px 20px 20px;
-			}
-
-			#panel #content .link {
-				color: #2194CE;
-				text-decoration: none;
-				cursor: pointer;
-				display: block;
-			}
-
-			#panel #content .selected {
-				color: #ff0000;
-			}
-
-			#panel #content .link:hover {
-				text-decoration: underline;
-			}
-
-			#viewer {
+			#info {
 				position: absolute;
-				border: 0px;
-				left: 310px;
-				width: calc(100% - 310px);
-				height: 100%;
-				overflow: auto;
-			}
-
-			#button {
-				position: fixed;
-				bottom: 20px;
-				right: 20px;
-				padding: 8px;
-				color: #fff;
-				background-color: #555;
-				opacity: 0.7;
-			}
-
-			#button:hover {
-				cursor: pointer;
-				opacity: 1;
-			}
-
-			.filterBlock{
-				margin: 20px;
-				position: relative;
-			}
-
-			.filterBlock p {
-				margin: 0;
-			}
-
-			#filterInput {
 				width: 100%;
+				color: #ffffff;
 				padding: 5px;
-				font-family: inherit;
-				font-size: 15px;
-				outline: none;
-				border: 1px solid #dedede;
-			}
-
-			#filterInput:focus{
-				border: 1px solid #2194CE;
-			}
-
-			#clearFilterButton {
-				position: absolute;
-				right: 6px;
-				top: 50%;
-				margin-top: -8px;
-				width: 16px;
-				height: 16px;
-				font-size: 14px;
-				color: grey;
-				text-align: center;
-				line-height: 0;
-				padding-top: 7px;
-				opacity: .5;
-			}
-
-			#clearFilterButton:hover {
-				opacity: 1;
-			}
-
-			.filtered {
-				display: none !important;
-			}
-
-			#panel li b {
+				font-family: Monospace;
+				font-size: 13px;
 				font-weight: bold;
+				text-align: center;
+				z-index: 1;
 			}
 
-			/* mobile */
-
-			#expandButton {
-				display: none;
+			#menu {
 				position: absolute;
-				right: 20px;
-				top: 12px;
-				width: 32px;
-				height: 32px;
+				bottom: 20px;
+				width: 100%;
+				text-align: center;
 			}
 
-			#expandButton span {
-				height: 2px;
-				background-color: #2194CE;
-				width: 16px;
-				position: absolute;
-				left: 8px;
-				top: 10px;
+			.element {
+				width: 180px;
+				height: 240px;
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.5);
+				border: 1px solid rgba(127,255,255,0.25);
+				text-align: center;
+				cursor: default;
 			}
 
-			#expandButton span:nth-child(1) {
-				top: 16px;
+			.element:hover {
+				box-shadow: 0px 0px 12px rgba(0,255,255,0.75);
+				border: 1px solid rgba(127,255,255,0.75);
 			}
 
-			#expandButton span:nth-child(2) {
-				top: 22px;
-			}
-
-			@media all and ( max-width: 640px ) {
-				h1{
-					margin-top: 20px;
-					margin-bottom: 20px;
-				}
-				#panel{
+				.element .number {
 					position: absolute;
-					left: 0;
-					top: 0;
-					height: 480px;
-					width: 100%;
-					right: 0;
-					z-index: 100;
-					overflow: hidden;
-					border-bottom: 1px solid #dedede;
+					top: 20px;
+					right: 20px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
 				}
-				#content{
-					position: absolute;
-					left: 0;
-					top: 90px;
-					right: 0;
-					bottom: 0;
-					font-size: 17px;
-					line-height: 22px;
-					overflow: auto;
-				}
-				#viewer{
-					position: absolute;
-					left: 0;
-					top: 56px;
-					width: 100%;
-					height: calc(100% - 56px);
-				}
-				#expandButton{
-					display: block;
-				}
-				#panel.collapsed{
-					height: 56px;
-				}
-			}
 
+				.element .symbol {
+					position: absolute;
+					top: 40px;
+					left: 0px;
+					right: 0px;
+					font-size: 60px;
+					font-weight: bold;
+					color: rgba(255,255,255,0.75);
+					text-shadow: 0 0 10px rgba(0,255,255,0.95);
+				}
+
+				.element .details {
+					position: absolute;
+					bottom: 15px;
+					left: 0px;
+					right: 0px;
+					font-size: 12px;
+					color: rgba(127,255,255,0.75);
+				}
+
+			button {
+				color: rgba(127,255,255,0.75);
+				background: transparent;
+				outline: 1px solid rgba(127,255,255,0.75);
+				border: 0px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			button:hover {
+				background-color: rgba(0,255,255,0.5);
+			}
+			button:active {
+				color: #000000;
+				background-color: rgba(0,255,255,0.75);
+			}
 		</style>
 	</head>
 	<body>
+		<script src="build/three.js"></script>
+		<script src="js/libs/tween.min.js"></script>
+		<script src="js/controls/TrackballControls.js"></script>
+		<script src="js/renderers/CSS3DRenderer.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="js/full_screen/full_screen.js"></script>
+		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
+		<script src="js/controls/DeviceOrientationControls.js"></script>
 
-		<div id="panel" class="collapsed">
-			<h1><a href="http://threejs.org">three.js</a> / examples</h1>
-			<a id="expandButton" href="#">
-				<span></span>
-				<span></span>
-				<span></span>
-			</a>
-			<div class="filterBlock" >
-				<input type="text" id="filterInput" placeholder="Type to filter"/>
-				<a href="#" id="clearFilterButton" >x</a>
-			</div>
-			<div id="content"></div>
+		<div id="splash_screen">
+			<h1 id="splash_screen_title">Curate Me</h1>
+			<p id="team_members">Alan Casallas | Keeley Erhardt | Julia Guo |  David Mayo</p>
+			<p id="welcome_message">Welcome to CurateMe, a virtual reality experience that lets you view the world as others see it by viewing the images, texts, and thoughts they have published online. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
+			<button id="start_button">Start</button>
 		</div>
-		<iframe id="viewer" name="viewer" allowfullscreen onmousewheel=""></iframe>
+		
+		
+		<div id="container"></div>
+		<div id="menu">
+			<button id="sphere">SPHERE</button>
+			<button id="helix">HELIX</button>
+			<button id="grid">GRID</button>
+		</div>
 
-		<script src="files.js"></script>
 		<script>
+			//document.getElementById('container').webkitRequestFullscreen();
+		// url, source, caption
+		// "http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1
 
-		var panel = document.getElementById( 'panel' );
-		var content = document.getElementById( 'content' );
-		var viewer = document.getElementById( 'viewer' );
+			var camera, scene, renderer, effect, photos;
+			var controls;
+			var images = [];
 
-		var filterInput = document.getElementById( 'filterInput' );
-		var clearFilterButton = document.getElementById( 'clearFilterButton' );
+			var objects = [];
+			var targets = { table: [], sphere: [], helix: [], grid: [] };
 
-		var expandButton = document.getElementById( 'expandButton' );
-		expandButton.addEventListener( 'click', function ( event ) {
-			panel.classList.toggle( 'collapsed' );
-			event.preventDefault();
-		} );
+			//initialize camera
+			camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+			camera.position.z = 3200; //camera position for loading screen
 
-		// iOS8 workaround
+			scene = new THREE.Scene();
 
-		if ( /(iPad|iPhone|iPod)/g.test( navigator.userAgent ) ) {
+            var lat; var lon;
 
-			viewer.addEventListener( 'load', function ( event ) {
+            //loading image
+        	var loadelem = document.createElement("img");
+			loadelem.src = "loading.gif";
+			loadelem.setAttribute("max-height", "400");
+			loadelem.setAttribute("width", "300");
+			var loadobject = new THREE.CSS3DObject( loadelem );
+			loadobject.position.x =0;
+			loadobject.position.y = 0;
+			loadobject.position.z = 0;
 
-				viewer.contentWindow.innerWidth -= 10;
-				viewer.contentWindow.innerHeight -= 2;
+            function getLocation() {
+			
+				scene.add( loadobject);
 
-			} );
+				//
 
-		}
+				renderer = new THREE.CSS3DStereoRenderer();
+				//renderer = new THREE.WebGLRenderer();
+				//renderer.setPixelRatio( window.devicePixelRatio );
+				//renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+				//renderer.domElement.style.position = "absolute";
+				//renderer.domElement.style.position = 'absolute';
+				//renderer.setPixelRatio( window.devicePixelRatio );
+				
+				renderer.setSize( window.innerWidth, window.innerHeight );
 
-		var container = document.createElement( 'div' );
-		content.appendChild( container );
+				//effect = new THREE.StereoEffect( renderer );
+				//effect.setSize( window.innerWidth, window.innerHeight );
 
-		var button = document.createElement( 'div' );
-		button.id = 'button';
-		button.textContent = 'View source';
-		button.addEventListener( 'click', function ( event ) {
+				document.getElementById( 'container' ).appendChild( renderer.domElement );
 
-			window.open( 'https://github.com/mrdoob/three.js/blob/master/examples/' + selected + '.html' );
+				//
+				renderer.render( scene, camera );
+				
+				var position;
 
-		}, false );
-		button.style.display = 'none';
-		document.body.appendChild( button );
+				callback(position);
 
-		var links = {};
-		var selected = null;
+               //navigator.geolocation.getCurrentPosition(callback);
+            }
+             
+            function callback(position) {
+            	console.log("got here");
+            	lat=42.359276907872704;
+				lon=-71.09365490761157
+               //lat = position.coords.latitude;
+               //lon = position.coords.longitude;
+               $.ajax({
+			  	url: 'https://api.flickr.com/services/rest/?',
+			  	data: {
+              	          method:  'flickr.photos.search',
+              	          api_key: 'ebf0d0344b1f200ad29dc4f473b71308',
+              	          format:  'json',
+              	          radius:   10,
+              	          has_geo:  1,
+              	          nojsoncallback: 1,
+              	          lat: lat,
+              	          lon: lon,
+              	      },
+			  	dataType: 'json',
+	
+				success: function(data) {
+              	  photos = data.photos.photo;
+              	  for (var i = 0; i < photos.length; i += 1) {
+              	      new_info = [];
+              	      src = "http://farm"+ 
+              	              photos[i].farm +".static.flickr.com/"+ 
+              	              photos[i].server +"/"+ 
+              	              photos[i].id +"_"+ 
+              	              photos[i].secret +"_z.jpg";
+              	      if (photos[i].title && !photos[i].title.startsWith('IMG')) {
+              	          new_info.push(photos[i].title);
+              	          new_info.push(src);   
+              	          images.push(new_info);         
+              	      } 
+              	  }
+              	  makeArray(images);
+              	}
+            });
+            }
 
-		for ( var key in files ) {
+            function makeArray(images) {
+            	var number_of_images=30;
+				if (images.length < number_of_images) {
+					number_of_images = images.length;
+				}
+				
+				for ( var i = 0; i < number_of_images; i += 1 ) {
 
-			var section = files[ key ];
+					var element = document.createElement( 'div' );
+					element.className = 'element';
+					element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
 
-			var header = document.createElement( 'h2' );
-			header.textContent = key;
-			header.setAttribute( 'data-category', key );
-			container.appendChild( header );
+					var number = document.createElement( 'div' );
+					number.className = 'number';
+					number.textContent = '';
+					element.appendChild( number );
 
-			for ( var i = 0; i < section.length; i ++ ) {
+					var symbol = document.createElement( 'div' );
+					symbol.className = 'symbol';
+					var elem = document.createElement("img");
+					symbol.appendChild(elem);
 
-				( function ( file ) {
+					// Flickr
+					elem.src = images[i][1];
+					elem.setAttribute("max-height", "200");
+					elem.setAttribute("width", "160");
+					element.appendChild( symbol );
 
-					var name = getName( file );
+					var details = document.createElement( 'div' );
+					details.className = 'details';
+					details.innerHTML = images[i][0];
+					element.appendChild( details );
 
-					var link = document.createElement( 'a' );
-					link.className = 'link';
-					link.textContent = name;
-					link.href = file + '.html';
-					link.setAttribute( 'target', 'viewer' );
-					link.addEventListener( 'click', function ( event ) {
+					var object = new THREE.CSS3DObject( element );
+					object.position.x = Math.random() * 4000 - 2000;
+					object.position.y = Math.random() * 4000 - 2000;
+					object.position.z = Math.random() * 4000 - 2000;
+					scene.add( object );
 
-						if ( event.button === 0 ) {
-
-							selectFile( file );
-
-						}
-
-					} );
-					container.appendChild( link );
-
-					links[ file ] = link;
-
-				} )( section[ i ] );
-
+					objects.push( object );
+            	}
+            	init();
+                animate();
 			}
 
-		}
+			function init() {
+				scene.remove( loadobject);
+				// sphere
+				var vector = new THREE.Vector3();
 
-		function loadFile( file ) {
+				for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
-			selectFile( file );
-			viewer.src = file + '.html';
+					var phi = Math.acos( -1 + ( 2 * i ) / l );
+					var theta = Math.sqrt( l * Math.PI ) * phi;
 
-		}
+					var object = new THREE.Object3D();
+					var radius=1000;
+					object.position.x = radius * Math.cos( theta ) * Math.sin( phi );
+					object.position.y = radius * Math.sin( theta ) * Math.sin( phi );
+					object.position.z = radius * Math.cos( phi );
 
-		function selectFile( file ) {
+					vector.copy( object.position ).multiplyScalar( 2 );
 
-			if ( selected !== null ) links[ selected ].classList.remove( 'selected' );
+					object.lookAt( vector );
 
-			links[ file ].classList.add( 'selected' );
-
-			window.location.hash = file;
-			viewer.focus();
-
-			button.style.display = '';
-			panel.classList.toggle( 'collapsed' );
-
-			selected = file;
-
-		}
-
-		if ( window.location.hash !== '' ) {
-
-			loadFile( window.location.hash.substring( 1 ) );
-
-		}
-
-		// filter
-
-		filterInput.addEventListener( 'input', function( e ) {
-
-			updateFilter();
-
-		} );
-
-		clearFilterButton.addEventListener( 'click', function( e ) {
-
-			filterInput.value = '';
-			updateFilter();
-			e.preventDefault();
-
-		} );
-
-		function updateFilter() {
-
-			var exp = new RegExp( filterInput.value, 'gi' );
-
-			for ( var key in files ) {
-
-				var section = files[ key ];
-
-				for ( var i = 0; i < section.length; i ++ ) {
-
-					filterExample( section[ i ], exp );
+					targets.sphere.push( object );
 
 				}
 
-			}
+				// helix
+				var vector = new THREE.Vector3();
 
-			layoutList();
+				for ( var i = 0, l = objects.length; i < l; i ++ ) {
 
-		}
+					var phi = i * 0.175 + Math.PI;
 
-		function filterExample( file, exp ){
+					var object = new THREE.Object3D();
+					var radius=1000;
+					object.position.x = radius * Math.sin( phi );
+					object.position.y = - ( i * 12 ) + radius/2;
+					object.position.z = radius * Math.cos( phi );
 
-			var link = links[ file ];
-			var name = getName( file );
-			var res = file.match( exp );
-			var text;
+					vector.x = object.position.x * 2;
+					vector.y = object.position.y;
+					vector.z = object.position.z * 2;
 
-			if ( res && res.length > 0 ) {
+					object.lookAt( vector );
 
-				link.classList.remove( 'filtered' );
-
-				for( var i = 0; i < res.length; i++ ) {
-					text = name.replace( res[ i ], '<b>' + res[ i ] + '</b>' );
-				}
-
-				link.innerHTML = text;
-
-			} else {
-
-				link.classList.add( 'filtered' );
-				link.innerHTML = name;
-
-			}
-		}
-
-		function getName( file ) {
-
-			var name = file.split( '_' );
-			name.shift();
-			return name.join( ' / ' );
-
-		}
-
-		function layoutList() {
-
-			for ( var key in files ) {
-
-				var collapsed = true;
-
-				var section = files[ key ];
-
-				for ( var i = 0; i < section.length; i ++ ) {
-
-					var file = section[ i ];
-
-					if( !links[ file ].classList.contains( 'filtered' ) ){
-
-						collapsed = false;
-						break;
-
-					}
+					targets.helix.push( object );
 
 				}
 
-				var element = document.querySelector( 'h2[data-category="' + key + '"]' );
+				// grid
+				for ( var i = 0; i < objects.length; i ++ ) {
 
-				if( collapsed ){
+					var object = new THREE.Object3D();
 
-					element.classList.add( 'filtered' );
+					object.position.x = ( ( i % 5 ) * 1200 ) - 2400;
+					object.position.y = ( - ( Math.floor( i / 5 ) % 5 ) * 1200 ) + 2400;
+					object.position.z = ( Math.floor( i / 25 ) ) * 1000 - 2000;
 
-				} else {
-
-					element.classList.remove( 'filtered' );
+					targets.grid.push( object );
 
 				}
+				
+				controls = new THREE.TrackballControls( camera, renderer.domElement );
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 1500;
+				controls.maxDistance = 8000;
+				controls.addEventListener( 'change', render );
+				
+				
+				//controls = new DeviceOrientationController( camera, renderer.domElement );
+				//controls.connect();
+				//controls = new THREE.DeviceOrientationControls(camera);
+				
+				//setupControllerEventHandlers( controls );
+				/*
+				controls.rotateSpeed = 0.5;
+				controls.minDistance = 3500;
+				controls.maxDistance = 16000;
+				*/
+				//controls2.addEventListener( 'change', render );
+				
+				/*
+				var button = document.getElementById( 'table' );
+				button.addEventListener( 'click', function ( event ) {
+
+					transform( targets.table, 2000 );
+
+				}, false );
+				*/
+
+				var button = document.getElementById( 'sphere' );
+				button.addEventListener( 'click', function ( event ) {
+					//controls.minDistance = 3500;
+					transform( targets.sphere, 2000 );
+
+				}, false );
+
+				var button = document.getElementById( 'helix' );
+				button.addEventListener( 'click', function ( event ) {
+					//controls.minDistance = 3500;
+					transform( targets.helix, 2000 );
+
+				}, false );
+
+				var button = document.getElementById( 'grid' );
+				button.addEventListener( 'click', function ( event ) {
+
+					//controls.minDistance = 400;
+					transform( targets.grid, 2000 );
+
+				}, false );
+
+				transform( targets.sphere, 2000 );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
 
 			}
 
-		}
+			function transform( targets, duration ) {
+				var startDist = 6000; //initial camera distance
+				TWEEN.removeAll();
+				new TWEEN.Tween( camera.position )
+						.to( { x: camera.position.x, y: camera.position.y, z: startDist }, Math.random() * duration + duration/3 )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
 
+				for ( var i = 0; i < objects.length; i ++ ) {
+					if(camera.po)
+					camera.position.z
+					var object = objects[ i ];
+					var target = targets[ i ];
+
+					new TWEEN.Tween( object.position )
+						.to( { x: target.position.x, y: target.position.y, z: target.position.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+
+					new TWEEN.Tween( object.rotation )
+						.to( { x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, Math.random() * duration + duration )
+						.easing( TWEEN.Easing.Exponential.InOut )
+						.start();
+
+				}
+				new TWEEN.Tween( this )
+					.to( {}, duration * 2 )
+					.onUpdate( render )
+					.start();
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				render();
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+
+				TWEEN.update();
+
+				controls.update();
+
+				renderer.render( scene, camera );
+
+			}
+
+			function render() {
+
+				renderer.render( scene, camera );
+
+			}
+
+			function setupControllerEventHandlers( controls ) {
+
+				// Listen for manual interaction (zoom OR rotate)
+				/*
+				controls.addEventListener( 'userinteractionstart', function () {
+					renderer.domElement.style.cursor = 'move';
+					controllerSelectorEl.style.display = 'none';
+				});
+
+				controls.addEventListener( 'userinteractionend', function () {
+					renderer.domElement.style.cursor = 'default';
+					controllerSelectorEl.style.display = 'inline-block';
+				});
+
+				// Listen for manual rotate interaction
+
+				controls.addEventListener( 'rotatestart', function () {
+					controllerEl.innerText = 'Manual Rotate';
+				});
+
+				controls.addEventListener( 'rotateend', function () {
+					controllerEl.innerText = controllerDefaultText;
+				});
+
+				// Listen for manual zoom interaction
+
+				controls.addEventListener( 'zoomstart', function () {
+					controllerEl.innerText = 'Manual Zoom';
+				});
+
+				controls.addEventListener( 'zoomend', function () {
+					controllerEl.innerText = controllerDefaultText;
+				});
+				*/
+			}
+			$( document ).ready(function() {
+				$("#container").hide();
+				$("#menu").hide();
+				$("#start_button").click(function() {
+					$("#container").show();
+					$("#menu").show();
+					$("#splash_screen").hide();
+					toggleFullScreen(document.body);
+					getLocation();
+				});
+			});
+			
+			
+			
 		</script>
-
 	</body>
 </html>
