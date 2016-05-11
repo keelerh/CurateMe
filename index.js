@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 app.use(express.static('three.js-master/examples'));
 
-var server_address = "http://18.189.3.8";
+var server_address = "http://18.189.111.137";
 
 
 

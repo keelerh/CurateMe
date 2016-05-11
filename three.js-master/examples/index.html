@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Curate Me</title>
+		<title>Virtually Here</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -153,9 +153,9 @@
 
 		<div id="splash_screen">
 		<button id="start_button">Start</button>
-			<h1 id="splash_screen_title">Curate Me</h1>
+			<h1 id="splash_screen_title">Virtually Here</h1>
 			<p id="team_members">Alan Casallas | Keeley Erhardt | Julia Guo |  David Mayo</p>
-			<p id="welcome_message">Welcome to CurateMe, a virtual reality experience that lets you view the world as others see it by viewing the images, texts, and thoughts they have published online. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
+			<p id="welcome_message">Welcome to Virtually Here, a virtual reality experience that lets you view the world as others see it by viewing the images, texts, and thoughts they have published online. Press the 'Start' button below, and put your phone inside Google Cardboard to begin your experience.</p>
 			
 		</div>
 
@@ -174,9 +174,9 @@
 			var camera, scene, renderer, effect, photos;
 			var controls;
 			var images = [];
-			var server_address = "http://18.189.3.8";
-			var lat=42.359276907872704;
-			var lon=-71.09365490761157;
+			var server_address = "http://18.189.111.137";
+			var lat=48.856614;
+			var lon=2.352222;
 			var rad = 10;
 			var count = 15;
 
@@ -200,6 +200,20 @@
 			loadobject.position.x =0;
 			loadobject.position.y = 0;
 			loadobject.position.z = 0;
+			
+			/**
+ * Shuffles array in place.
+ * @param {Array} a items The array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i -= 1) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+}
 
             function getLocation() {
 			
@@ -288,6 +302,7 @@
 					success: function(result) {
 						console.log("return returned");
 						addTweets(result);
+						shuffle(objects);
 						init();
 						animate();
 					},
@@ -299,7 +314,7 @@
 			}
 			
 			function addTweets(tweets) {
-				var number_of_tweets = 15;
+				var number_of_tweets = 8;
 				if (tweets.length < number_of_tweets) {
 					number_of_tweets = tweets.length;
 				}
@@ -342,7 +357,7 @@
 			}
 
             function addFlickrImages(images) {
-            	var number_of_images=15;
+            	var number_of_images=22;
 				for ( var i = 0; i < number_of_images; i += 1 ) {
 
 					var element = document.createElement( 'div' );
