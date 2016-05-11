@@ -162,7 +162,7 @@
 		</div>
 
 		<script>
-			document.getElementById('container').webkitRequestFullscreen();
+			//document.getElementById('container').webkitRequestFullscreen();
 		// url, source, caption
 		// "http://media.erickpinos.com/14-12-03-Morning-Walk-10.jpg", "Hydrogen", "1.00794", 1, 1
 
@@ -455,11 +455,22 @@
 			}
 
 			function onWindowResize() {
+				console.log(document.body.clientWidth);
 
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				render();
+
+			}
+			function onFullScreenResize() {
+
+				camera.aspect = screen.width / screen.height;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( screen.width,  screen.height );
 
 				render();
 
@@ -527,7 +538,7 @@
 					$("#splash_screen").hide();
 					toggleFullScreen(document.body);
 					getLocation();
-					onWindowResize();
+					onFullScreenResize();
 				});
 			});
 		</script>
