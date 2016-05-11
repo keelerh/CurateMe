@@ -108,6 +108,11 @@
 				color: rgba(255,255,255,0.75);
 				text-shadow: 0 0 10px rgba(0,255,255,0.95);
 			}
+			
+			.tweetbackground {
+				background: #FFFFFF;
+				margin: 10px;
+			}
 
 			.element .details {
 				position: absolute;
@@ -140,7 +145,7 @@
 		<script src="js/libs/tween.min.js"></script>
 		<script src="js/controls/TrackballControls.js"></script>
 		<script src="js/renderers/CSS3DRenderer.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 		<script src="js/full_screen/full_screen.js"></script>
 		<script src="js/renderers/CSS3DStereoRenderer.js"></script>
 		<script src="js/controls/DeviceOrientationController.js"></script>
@@ -169,6 +174,11 @@
 			var camera, scene, renderer, effect, photos;
 			var controls;
 			var images = [];
+			var server_address = "http://18.189.3.8";
+			var lat=42.359276907872704;
+			var lon=-71.09365490761157;
+			var rad = 10;
+			var count = 15;
 
 			var objects = [];
 			var targets = { table: [], sphere: [], helix: [], grid: [] };
@@ -224,8 +234,7 @@
              
             function callback(position) {
             	console.log("got here");
-            	lat=42.359276907872704;
-				lon=-71.09365490761157;
+
                //lat = position.coords.latitude;
                //lon = position.coords.longitude;
                $.ajax({
@@ -234,7 +243,7 @@
               	          method:  'flickr.photos.search',
               	          api_key: 'ebf0d0344b1f200ad29dc4f473b71308',
               	          format:  'json',
-              	          radius:   10,
+              	          radius:   rad,
               	          has_geo:  1,
               	          nojsoncallback: 1,
               	          lat: lat,
@@ -257,13 +266,83 @@
               	          images.push(new_info);         
               	      } 
               	  }
-              	  makeArray(images);
+              	  addFlickrImages(images);
+				  getTweets();
               	}
             });
             }
+			
+			function getTweets() {
+				var geocode = lat.toString() + "," + lon.toString() + "," + rad.toString() + "mi";
+	
+				var query_url = server_address + "/gettweet";
+				query_url += "?geocode=" + geocode;
+				query_url += "&count=" + count.toString();
+				
+				console.log("sending url: " + query_url);
+	
+				$.get({
+					url: query_url,
+					type: "GET",
+					dataType: "json",
+					success: function(result) {
+						console.log("return returned");
+						addTweets(result);
+						init();
+						animate();
+					},
+					error: function (err) {
+						console.log("got an error back!");
+						console.log(err);
+					},
+				});
+			}
+			
+			function addTweets(tweets) {
+				var number_of_tweets = 15;
+				if (tweets.length < number_of_tweets) {
+					number_of_tweets = tweets.length;
+				}
+				
+				for (var i = 0; i < number_of_tweets; i += 1) {
+					var element = document.createElement( 'div' );
+					element.className = 'element';
+					element.style.backgroundColor = 'rgba(0,127,127,' + ( Math.random() * 0.5 + 0.25 ) + ')';
 
-            function makeArray(images) {
-            	var number_of_images=30;
+					var number = document.createElement( 'div' );
+					number.className = 'number';
+					number.textContent = '';
+					element.appendChild( number );
+					
+					var elem = document.createElement("div");
+					element.appendChild(elem);
+
+					// Twitter
+					elem.className = 'tweetbackground';
+					elem.setAttribute("max-height", "200");
+					elem.setAttribute("width", "160");
+					
+					var tweet_image = document.createElement('img');
+					tweet_image.src = "twitter_logo.jpg"
+					elem.appendChild(tweet_image);
+
+					var details = document.createElement( 'div' );
+					details.innerHTML = tweets[i].text;
+					elem.appendChild( details );
+					
+					var object = new THREE.CSS3DObject( element );
+					object.position.x = Math.random() * 4000 - 2000;
+					object.position.y = Math.random() * 4000 - 2000;
+					object.position.z = Math.random() * 4000 - 2000;
+					scene.add( object );
+
+					objects.push( object );
+				}
+			
+			}
+
+            function addFlickrImages(images) {
+            	var number_of_images=15;
 				for ( var i = 0; i < number_of_images; i += 1 ) {
 
 					var element = document.createElement( 'div' );
@@ -299,8 +378,7 @@
 
 					objects.push( object );
             	}
-            	init();
-                animate();
+
 			}
 
 			function init() {

@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 app.use(express.static('three.js-master/examples'));
 
-var server_address = "http://18.189.110.236";
+var server_address = "http://18.189.3.8";
 
 
 
@@ -22,7 +22,7 @@ var twitter = new Twitter(config);
 
 //This gets the server ready to respond to the /gettweet REST endpoint. Usage is: /gettweet?geocode={float-lattitude},{float-longitude},{float-radius}mi&count={integer-count}"
 app.get('/gettweet', function (req, res) {
-	
+	console.log("Received gettweet request!");
 	twitter.getSearch({'geocode':req.query.geocode,'count': parseInt(req.query.count)}, 
 	function(err, response, body) {
 		        console.log('ERROR [%s]', err);
