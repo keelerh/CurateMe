@@ -179,7 +179,7 @@
             function callback(position) {
             	console.log("got here");
             	lat=42.359276907872704;
-				lon=-71.09365490761157
+				lon=-71.09365490761157;
                //lat = position.coords.latitude;
                //lon = position.coords.longitude;
                $.ajax({
@@ -316,6 +316,7 @@
 					targets.grid.push( object );
 
 				}
+				
 				
 				controls = new THREE.TrackballControls( camera, renderer.domElement );
 				controls.rotateSpeed = 0.5;

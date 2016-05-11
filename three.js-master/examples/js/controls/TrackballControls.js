@@ -36,6 +36,8 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	this.keys = [ 65 /*A*/, 83 /*S*/, 68 /*D*/ ];
 
+	this.alphaOffsetAngle = 0; //offset for device orientation angle
+
 	// internals
 
 	this.target = new THREE.Vector3();
@@ -61,6 +63,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	_touchZoomDistanceStart = 0,
 	_touchZoomDistanceEnd = 0,
+
+	_screenOrientation = 0,
+	_deviceOrientation = null,
 
 	_panStart = new THREE.Vector2(),
 	_panEnd = new THREE.Vector2();
@@ -404,6 +409,86 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	}
 
+	function onDeviceOrientationChangeEvent( event ) {
+		if ( _this.enabled === false ) return;
+		_deviceOrientation = event;
+		if(_this.alphaOffsetAngle==0){
+			_this.alphaOffsetAngle=_deviceOrientation.alpha ? THREE.Math.degToRad( _deviceOrientation.alpha ) : 0;
+		}
+		var alpha = _deviceOrientation.alpha ? THREE.Math.degToRad( _deviceOrientation.alpha ) - _this.alphaOffsetAngle : 0; // Z
+		var beta = _deviceOrientation.beta ? THREE.Math.degToRad( _deviceOrientation.beta ) : 0; // X'
+		var gamma = _deviceOrientation.gamma ? THREE.Math.degToRad( _deviceOrientation.gamma ) : 0; // Y''
+		var orient = _screenOrientation ? THREE.Math.degToRad( _screenOrientation ) : 0; // O
+
+		//correct alpha angle
+		if(alpha<0){
+			alpha+=2*Math.PI; //wrap angle from 0 to 2*pi
+		}
+		var negAlpha=1;
+		if(2*Math.PI-alpha<alpha){
+			negAlpha=-1;
+			alpha=2*Math.PI-alpha; //find the accute angle
+		}
+		alpha *= negAlpha; //correct the sign of alpha, 0 is center, pos is left, nef is right
+		if(Math.abs(beta)>Math.PI/2){
+			if(alpha<0){
+				alpha += Math.PI;
+			}
+			else{
+				alpha -= Math.PI;
+			}
+		}
+
+		console.log("A B G");
+		console.log(alpha);
+		console.log(beta);
+		console.log(gamma);
+		var horizontal_threshold=.35;
+		var vertical_threshold=.05;
+		var vertical_offset=-1*1.5;
+		var turnRate=.03;
+
+		if(alpha>horizontal_threshold){
+			_moveCurr.x=alpha/10.0;
+			_movePrev.x=0;
+			console.log("right");
+		}
+
+		else if(alpha<horizontal_threshold){
+			_moveCurr.x=alpha/10.0;
+			_movePrev.x=0;
+			console.log("left");
+		}
+		else{
+			_moveCurr.x=0;
+			_movePrev.x=0;
+		}
+		
+		if(gamma>0&&Math.abs(gamma+vertical_offset)>vertical_threshold){
+			_moveCurr.y=Math.abs((gamma+vertical_offset)-vertical_threshold)/5.0;
+			_movePrev.y=0;
+			console.log("up");
+		}
+		else if(gamma<0&&Math.abs(gamma-vertical_offset)>vertical_threshold/3){
+			_moveCurr.y=-1*((Math.abs(gamma-vertical_offset)-vertical_threshold/3)/5.0);
+			_movePrev.y=0;
+			console.log("down");
+		}
+		else{
+			_moveCurr.y=0;
+			_movePrev.y=0;
+		}
+		
+		//console.log(_moveCurr.x);
+		//console.log(_movePrev.x);
+	}
+
+	function onScreenOrientationChangeEvent() {
+		if ( _this.enabled === false ) return;
+		_screenOrientation = window.orientation || 0; //portrait of landscape
+
+	}
+
 	function mousedown( event ) {
 
 		if ( _this.enabled === false ) return;
@@ -436,7 +521,7 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 		document.addEventListener( 'mousemove', mousemove, false );
 		document.addEventListener( 'mouseup', mouseup, false );
-		
+
 		_this.dispatchEvent( startEvent );
 
 	}
@@ -627,6 +712,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 		window.removeEventListener( 'keydown', keydown, false );
 		window.removeEventListener( 'keyup', keyup, false );
 
+		window.removeEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+		window.removeEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
+
 	};
 
 	this.domElement.addEventListener( 'contextmenu', contextmenu, false );
@@ -640,6 +728,9 @@ THREE.TrackballControls = function ( object, domElement ) {
 
 	window.addEventListener( 'keydown', keydown, false );
 	window.addEventListener( 'keyup', keyup, false );
+
+	window.addEventListener( 'orientationchange', onScreenOrientationChangeEvent, false );
+	window.addEventListener( 'deviceorientation', onDeviceOrientationChangeEvent, false );
 
 	this.handleResize();
 
